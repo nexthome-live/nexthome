@@ -2,7 +2,11 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  height: calc(var(--header-height-mobile) + var(--safe-top));
+  /* Use min-height (not height) so the NoticeBanner child is included
+     in the header's layout box. Previously the fixed `height` caused
+     the banner to overflow the header and visually paint over the
+     Back / Home buttons in the screen below. */
+  min-height: calc(var(--header-height-mobile) + var(--safe-top));
   padding-top: var(--safe-top);
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: saturate(180%) blur(12px);
@@ -12,7 +16,7 @@
 
 @media (min-width: 640px) {
   .app-header {
-    height: calc(var(--header-height) + var(--safe-top));
+    min-height: calc(var(--header-height) + var(--safe-top));
   }
 }
 
