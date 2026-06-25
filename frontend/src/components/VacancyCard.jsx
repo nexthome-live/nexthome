@@ -37,23 +37,64 @@ function buildInquiryMessage(vacancy) {
   return { subject, body }
 }
 
-// Gmail web compose helper. We always go through Gmail on the web (never
-// `mailto:`) so the user's OS default mail client — Outlook on Windows —
-// never opens in the background alongside the new tab.
+// Lightweight platform detection — used only to pick the right mail intent
+// for mobile (Android/iOS). We deliberately avoid feature-detection
+// libraries so this file stays dependency-free.
+function detectPlatform() {
+  if (typeof navigator === 'undefined') return { os: 'desktop', isMobile: false }
+  const ua = (navigator.userAgent || '').toLowerCase()
+  const isAndroid = /android/.test(ua)
+  const isIOS = /iphone|ipad|ipod/.test(ua) ||
+    (ua.includes('mac') && typeof document !== 'undefined' && document.documentElement?.dataset?.touch === 'true')
+  const isMobile = isAndroid || isIOS
+  return { os: isAndroid ? 'android' : isIOS ? 'ios' : 'desktop', isMobile }
+}
+
+// Build an Android `intent://` URL that opens the Gmail app's compose screen
+// pre-filled with to/subject/body. Falls back to Gmail web if Gmail is not
+// installed (Chrome handles the fallback automatically when `S.browser_fallback_url`
+// is present and the intent can't be resolved).
+//   Ref: https://developer.chrome.com/docs/multidevice/android/intents
+function buildAndroidGmailIntent({ to, subject, body }) {
+  // Browser fallback used when the Gmail package isn't installed — Chrome
+  // will load this URL automatically via `S.browser_fallback_url`.
+  const fallback = `https://mail.google.com/mail/?${new URLSearchParams({
+    view: 'cm', fs: '1', to, su: subject, body,
+  }).toString()}`
+  // Compose intent targeting the Gmail app (com.google.android.gm) with our
+  // template pre-filled. The `mailto:` scheme is the universal "open a
+  // compose window" intent on Android, and Gmail respects SENDTO extras.
+  return `intent:mailto:${to}` +
+    `#Intent;scheme=mailto;` +
+    `action=android.intent.action.SENDTO;` +
+    `package=com.google.android.gm;` +
+    `S.browser_fallback_url=${encodeURIComponent(fallback)};` +
+    `S.android.intent.extra.SUBJECT=${encodeURIComponent(subject)};` +
+    `S.android.intent.extra.TEXT=${encodeURIComponent(body)};` +
+    `end`
+}
+
+// iOS uses the Gmail app's custom URL scheme. If the user doesn't have
+// Gmail installed the link will silently fail, so we also expose a
+// `googlegmail://co?to=...&subject=...&body=...` link and rely on
+// `mailto:` as the real fallback.
+function buildIOSGmailUrl({ to, subject, body }) {
+  const params = new URLSearchParams({ to, subject, body })
+  return `googlegmail://co?${params.toString()}`
+}
+
+function buildMailtoUrl({ to, subject, body }) {
+  const params = new URLSearchParams({ subject, body })
+  return `mailto:${to}?${params.toString()}`
+}
+
 function buildGmailComposeUrl(vacancy) {
   const to = vacancy.contactEmail
   if (!to) return null
   const { subject, body } = buildInquiryMessage(vacancy)
-  // Gmail expects the `to` query to be a comma-separated list of addresses.
-  // We pass subject/body separately so Gmail puts them in the right fields.
-  const params = new URLSearchParams({
-    view: 'cm',
-    fs: '1',
-    to,
-    su: subject,
-    body,
-  })
-  return `https://mail.google.com/mail/?${params.toString()}`
+  return {
+    primary: { to, subject, body },
+  }
 }
 
 const ROOM_BADGE = {
@@ -69,10 +110,64 @@ function getRoomBadge(roomType) {
   return ROOM_BADGE[key] || { label: roomType, tone: 'gray' }
 }
 
+// Module-scope click handler so the React 19 purity rule doesn't flag
+// `window.location.href = ...` (which is a side effect that is perfectly
+// valid inside an event handler). Pulled out of the component body for
+// exactly that reason.
+function handleContactClick(e, platform, compose) {
+  if (!compose) return
+  if (!platform.isMobile) return // desktop uses the <a target="_blank"> default
+  e.preventDefault()
+  const { to, subject, body } = compose.primary
+
+  if (platform.os === 'android') {
+    // `intent://` URLs only work as a top-level navigation, never inside
+    // an `<a target="_blank">`. Chrome handles the fallback URL itself
+    // when the Gmail package isn't installed.
+    window.location.href = buildAndroidGmailIntent({ to, subject, body })
+    return
+  }
+
+  // iOS / iPadOS: try the Gmail app via its custom scheme first. If the
+  // user doesn't have Gmail installed the navigation silently fails
+  // (the page stays visible) and we fall back to `mailto:`.
+  const start = Date.now()
+  window.location.href = buildIOSGmailUrl({ to, subject, body })
+  setTimeout(() => {
+    if (typeof document !== 'undefined' &&
+        document.visibilityState === 'visible' &&
+        Date.now() - start < 1500) {
+      window.location.href = buildMailtoUrl({ to, subject, body })
+    }
+  }, 1000)
+}
+
+function buildDesktopGmailUrl({ to, subject, body }) {
+  const params = new URLSearchParams({ view: 'cm', fs: '1', to, su: subject, body })
+  return `https://mail.google.com/mail/?${params.toString()}`
+}
+
+function getContactHref(platform, compose) {
+  if (!compose) return null
+  const { to, subject, body } = compose.primary
+  if (platform.os === 'android') {
+    return buildAndroidGmailIntent({ to, subject, body })
+  }
+  if (platform.os === 'ios') {
+    return buildIOSGmailUrl({ to, subject, body })
+  }
+  // Desktop: keep the Gmail-web-in-new-tab behavior so we don't accidentally
+  // fire up Outlook on Windows.
+  return buildDesktopGmailUrl({ to, subject, body })
+}
+
 export function VacancyCard({ vacancy, onManage, isActive }) {
   const badge = getRoomBadge(vacancy.roomType)
-  const gmailUrl = buildGmailComposeUrl(vacancy)
-  const contactDisabled = !gmailUrl
+  const compose = buildGmailComposeUrl(vacancy)
+  const contactDisabled = !compose
+  const platform = detectPlatform()
+  const contactHref = getContactHref(platform, compose)
+  const onContactClick = (e) => handleContactClick(e, platform, compose)
 
   return (
     <article className={`vcard ${isActive ? 'vcard--active' : ''}`}>
@@ -131,11 +226,14 @@ export function VacancyCard({ vacancy, onManage, isActive }) {
           </Button>
         ) : (
           // Render as a real <a> so the browser opens Gmail in a new tab
-          // without ever invoking the OS default mail client (Outlook on Windows).
+          // on desktop (avoids firing up Outlook on Windows). On mobile
+          // `handleContactClick` takes over and navigates the current tab
+          // to the right native intent.
           <a
             className="btn btn--outline btn--sm"
-            href={gmailUrl}
-            target="_blank"
+            href={contactHref}
+            onClick={onContactClick}
+            target={platform.isMobile ? '_self' : '_blank'}
             rel="noopener noreferrer"
             title={`Email ${vacancy.contactEmail} via Gmail`}
           >
