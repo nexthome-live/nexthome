@@ -1,7 +1,2 @@
-:root {
-  color-scheme: light;
-}
-
-#root {
-  min-height: 100vh;
-}
+@import "./styles/tokens.css";
+@import "./styles/base.css";

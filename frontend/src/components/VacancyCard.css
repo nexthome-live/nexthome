@@ -1,0 +1,176 @@
+.vcard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out),
+              border-color var(--duration-base) var(--ease-out);
+}
+
+.vcard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+
+.vcard--active {
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px rgba(59, 107, 255, 0.15), var(--shadow-md);
+}
+
+.vcard__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.vcard__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.vcard__title {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--text-strong);
+  word-break: break-word;
+}
+
+.vcard__chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vcard__chip--blue   { background: var(--brand-50);   color: var(--brand-700);   }
+.vcard__chip--amber  { background: #fff7e6;            color: #b45309;            }
+.vcard__chip--violet { background: #f3e8ff;            color: #6b21a8;            }
+.vcard__chip--green  { background: var(--success-50); color: var(--success-700); }
+.vcard__chip--gray   { background: var(--ink-100);    color: var(--ink-700);    }
+
+.vcard__rent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.1;
+  flex-shrink: 0;
+}
+
+.vcard__rent-value {
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  color: var(--brand-700);
+  letter-spacing: -0.02em;
+}
+
+.vcard__rent-suffix {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.vcard__desc {
+  color: var(--text-soft);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.vcard__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-muted);
+  border-radius: var(--radius-md);
+}
+
+.vcard__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vcard__meta-item dt {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vcard__meta-item dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.vcard__contact-link {
+  color: var(--brand-700);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px dashed currentColor;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.vcard__contact-link:hover {
+  color: var(--brand-500);
+  border-bottom-style: solid;
+}
+
+.vcard__contact-email {
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+}
+
+.vcard__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .vcard {
+    padding: var(--space-4);
+  }
+
+  .vcard__head {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .vcard__rent {
+    align-items: flex-start;
+  }
+
+  .vcard__meta {
+    grid-template-columns: 1fr;
+    padding: var(--space-3);
+  }
+
+  .vcard__foot {
+    flex-direction: column;
+  }
+  .vcard__foot > * { width: 100%; }
+}

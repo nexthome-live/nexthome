@@ -1,6 +1,6 @@
 # nextHome
 
-Web application for posting and finding nearby room/home vacancies.
+Web application for posting and finding nearby rental vacancies in the US.
 
 ## Architecture
 

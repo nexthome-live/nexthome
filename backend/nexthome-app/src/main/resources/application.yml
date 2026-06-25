@@ -2,7 +2,7 @@ spring:
   application:
     name: nexthome-app
   datasource:
-    url: ${DB_URL:jdbc:mysql://nexthome-nexthome.l.aivencloud.com:14560/vacancy_db}
+    url: ${DB_URL:jdbc:mysql://nexthome-nexthome.l.aivencloud.com:14556/vacancy_db}
     username: ${DB_USERNAME:avnadmin}
     password: ${DB_PASSWORD:AVNS_gnhYrsECOIB0hcmdylj}
   jpa:
@@ -13,10 +13,15 @@ spring:
 server:
   port: ${PORT:8080}
 
+# CORS
+# - Local dev: allow Vite origins (5173) and Vite preview (4173).
+# - Production (Cloud Run): override CORS_ALLOWED_ORIGINS with the deployed frontend URL
+#   (e.g. https://nexthome-live.github.io). See deployment docs.
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:4173,https://nexthome-live.github.io}
   allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
   allowed-headers: ${CORS_ALLOWED_HEADERS:Content-Type,Accept,Authorization,X-Management-Token}
+  max-age: 3600
 
 management:
   endpoints:
