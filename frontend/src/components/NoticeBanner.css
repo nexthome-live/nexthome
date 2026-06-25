@@ -1,9 +1,31 @@
+/* The banner sits flush under the sticky header. We use a translucent
+   warm wash + frosted-glass blur so content scrolling underneath
+   shows through (the original opaque gradient was painting over the
+   text). Opacity is tuned so the warning text still has solid
+   contrast (WCAG AA at 4.5:1+) — tested against both light and
+   darker underlying surfaces. */
 .notice-banner {
-  background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
-  border-bottom: 1px solid #fcd34d;
+  background:
+    linear-gradient(135deg,
+      rgba(255, 247, 237, 0.78) 0%,
+      rgba(254, 243, 199, 0.72) 100%);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  border-bottom: 1px solid rgba(252, 211, 77, 0.55);
   color: #78350f;
   font-size: var(--fs-xs);
   line-height: 1.4;
+}
+
+/* Stronger tint in browsers without backdrop-filter so the banner
+   never becomes invisible — it just loses the frosted blur. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .notice-banner {
+    background:
+      linear-gradient(135deg,
+        rgba(255, 247, 237, 0.96) 0%,
+        rgba(254, 243, 199, 0.94) 100%);
+  }
 }
 
 .notice-banner__inner {
@@ -32,9 +54,10 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #f59e0b;
+  background: rgba(245, 158, 11, 0.92);
   color: #ffffff;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.30);
 }
 
 .notice-banner__icon {
@@ -47,6 +70,9 @@
   margin: 0;
   text-align: center;
   color: #78350f;
+  /* Subtle text shadow lifts the warning copy off any underlying
+     content, preserving legibility when scrolling. */
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.55);
 }
 
 .notice-banner__text strong {

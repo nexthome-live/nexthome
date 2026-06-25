@@ -1,4 +1,4 @@
-.home-screen {
+﻿.home-screen {
   width: min(1120px, 100%);
   margin: 0 auto;
   padding: var(--space-7) var(--space-4) var(--space-7);
@@ -91,7 +91,7 @@
   margin-top: 4px;
 }
 
-/* Hero illustration — desktop only. On phones we hide it to save space. */
+/* Hero illustration â€” desktop only. On phones we hide it to save space. */
 .home-hero__visual {
   position: relative;
   display: flex;
@@ -112,68 +112,306 @@
   .home-hero__visual { display: none; }
 }
 
-.home-illu {
-  width: 100%;
-  max-width: 440px;
-  aspect-ratio: 1 / 1;
+/* Modern "Pinpoint" hero â€” a glass-morphism card with a stylized map
+   fragment, a single map pin that drops in and rings outward, and a
+   floating listing chip. Communicates "find a place nearby" without
+   drawing a literal house. */
+.home-pinpoint {
   position: relative;
-}
-
-.home-illu__blob {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--brand-200), var(--accent-300));
-  border-radius: 42% 58% 65% 35% / 38% 45% 55% 62%;
-  filter: blur(2px);
-  opacity: 0.85;
-  animation: blob-morph 16s ease-in-out infinite;
-}
-
-.home-illu__blob--alt {
-  position: absolute;
-  inset: 18% 22% 14% 18%;
-  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
-  border-radius: 65% 35% 50% 50% / 50% 50% 50% 50%;
-  opacity: 0.92;
-  box-shadow: 0 30px 60px rgba(59, 107, 255, 0.30);
-}
-
-.home-illu__card {
-  position: absolute;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 5 / 4;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  background: var(--white);
-  padding: 12px 16px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text);
+  justify-content: center;
 }
 
-.home-illu__card-icon {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
+/* Soft ambient orb â€” adds depth without competing for attention. */
+.home-pinpoint__orb {
+  position: absolute;
+  width: 78%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%,
+      rgba(255, 194, 138, 0.55) 0%,
+      rgba(59, 107, 255, 0.20) 38%,
+      rgba(59, 107, 255, 0) 70%);
+  filter: blur(14px);
+  animation: pinpoint-breathe 7s ease-in-out infinite;
+}
+
+/* The main glass card */
+.home-pinpoint__card {
+  position: relative;
+  width: 84%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-2xl);
+  background:
+    linear-gradient(160deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(238, 244, 255, 0.85) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    var(--shadow-xl),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  isolation: isolate;
+  animation: pinpoint-rise 7s var(--ease-out) infinite;
+}
+
+/* The "map" surface inside the card */
+.home-pinpoint__map {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(59, 107, 255, 0.08) 0%, rgba(59, 107, 255, 0) 60%),
+    linear-gradient(180deg, #f7faff 0%, #eef3ff 100%);
+}
+
+/* Soft grid texture */
+.home-pinpoint__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59, 107, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 107, 255, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at center, #000 50%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 50%, transparent 95%);
+}
+
+/* A few stylized "streets" */
+.home-pinpoint__street {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(59, 107, 255, 0.18), transparent);
+  border-radius: 999px;
+}
+.home-pinpoint__street--h1 { top: 30%; left: 8%;  right: 12%; height: 1.5px; }
+.home-pinpoint__street--h2 { top: 55%; left: 18%; right: 6%;  height: 1.5px; transform: rotate(-2deg); }
+.home-pinpoint__street--h3 { top: 78%; left: 4%;  right: 24%; height: 1.5px; }
+.home-pinpoint__street--v1 { top: 12%; bottom: 12%; left: 24%; width: 1.5px; background: linear-gradient(180deg, transparent, rgba(59, 107, 255, 0.18), transparent); }
+.home-pinpoint__street--v2 { top: 6%;  bottom: 18%; left: 56%; width: 1.5px; background: linear-gradient(180deg, transparent, rgba(59, 107, 255, 0.18), transparent); transform: rotate(3deg); }
+.home-pinpoint__street--v3 { top: 16%; bottom: 8%;  right: 18%; width: 1.5px; background: linear-gradient(180deg, transparent, rgba(59, 107, 255, 0.18), transparent); }
+
+/* Soft "neighborhood blocks" â€” implies "places exist here". */
+.home-pinpoint__block {
+  position: absolute;
   border-radius: var(--radius-sm);
-  background: var(--brand-50);
+  background: linear-gradient(180deg, rgba(143, 184, 134, 0.35), rgba(143, 184, 134, 0.15));
+  border: 1px solid rgba(143, 184, 134, 0.25);
+}
+.home-pinpoint__block--a { top: 14%; left: 10%; width: 18%; height: 18%; }
+.home-pinpoint__block--b { top: 62%; left: 36%; width: 16%; height: 14%; }
+.home-pinpoint__block--c { top: 18%; right: 24%; width: 14%; height: 16%; background: linear-gradient(180deg, rgba(255, 194, 138, 0.40), rgba(255, 194, 138, 0.20)); border-color: rgba(255, 194, 138, 0.30); }
+
+/* Pin: drops in from above the card, bounces gently, then floats */
+.home-pinpoint__pin {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  width: 28px;
+  height: 36px;
+  z-index: 3;
+  animation: pinpoint-drop 7s var(--ease-out) infinite;
+}
+.home-pinpoint__pin-head {
+  position: absolute;
+  inset: 0 0 10px 0;
+  background: linear-gradient(160deg, var(--brand-500), var(--brand-700));
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow:
+    0 6px 14px rgba(59, 107, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.home-pinpoint__pin-stem {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 2px;
+  height: 8px;
+  background: var(--brand-700);
+  transform: translateX(-50%);
+}
+.home-pinpoint__pin-dot {
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--white);
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Concentric ripple rings â€” fire once per loop right after the pin lands */
+.home-pinpoint__ripple {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--brand-500);
+  opacity: 0;
+  animation: pinpoint-ripple 7s ease-out infinite;
+  z-index: 2;
+}
+.home-pinpoint__ripple--2 { animation-delay: -6.6s; }
+
+/* Floating listing chip â€” reinforces "discover nearby". */
+.home-pinpoint__listing {
+  position: absolute;
+  right: 4%;
+  top: 12%;
+  width: 46%;
+  padding: 10px 12px;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: pinpoint-float 7s var(--ease-in-out) infinite;
+  z-index: 4;
+}
+.home-pinpoint__listing-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--brand-300), var(--brand-500));
+  flex-shrink: 0;
+}
+.home-pinpoint__listing-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.home-pinpoint__listing-line {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ink-200);
+}
+.home-pinpoint__listing-line--title { width: 70%; background: var(--ink-700); }
+.home-pinpoint__listing-line--meta  { width: 45%; background: var(--ink-300); }
+
+/* Distance chip â€” small "0.8 mi" tag below the pin */
+.home-pinpoint__chip {
+  position: absolute;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--white);
   color: var(--brand-700);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  z-index: 4;
+  animation: pinpoint-chip 7s var(--ease-out) infinite;
 }
 
-.home-illu__card--top    { top:  6%;  left: -4%; animation: float 6s ease-in-out infinite; }
-.home-illu__card--bottom { bottom: 8%; right: -2%; animation: float 6s ease-in-out infinite reverse; animation-delay: -3s; }
-.home-illu__card--middle { top: 44%;  right: -8%; animation: float 6s ease-in-out infinite; animation-delay: -1.5s; }
-
-@keyframes blob-morph {
-  0%, 100% { border-radius: 42% 58% 65% 35% / 38% 45% 55% 62%; }
-  50%      { border-radius: 65% 35% 50% 50% / 50% 50% 50% 50%; }
+/* ---- Keyframes ---- */
+@keyframes pinpoint-drop {
+  /* Drops in from above, settles, floats gently for the rest of the loop */
+  0%   { transform: translate(-50%, -360%) scale(0.6); opacity: 0; }
+  10%  { transform: translate(-50%, -260%) scale(0.85); opacity: 1; }
+  18%  { transform: translate(-50%, -100%) scale(1.05); }
+  22%  { transform: translate(-50%, -112%) scale(0.96); }
+  26%  { transform: translate(-50%, -100%) scale(1); }
+  85%  { transform: translate(-50%, -100%) scale(1); }
+  100% { transform: translate(-50%, -100%) scale(1); }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
+@keyframes pinpoint-ripple {
+  0%   { transform: scale(0.6); opacity: 0; border-width: 2px; }
+  20%  { opacity: 0.9; }
+  60%  { transform: scale(7);   opacity: 0; border-width: 1px; }
+  100% { transform: scale(7);   opacity: 0; }
+}
+
+@keyframes pinpoint-float {
+  /* Rises into place from below, then gently bobs. */
+  0%   { transform: translateY(40%); opacity: 0; }
+  18%  { transform: translateY(0);    opacity: 0; }
+  32%  { transform: translateY(0);    opacity: 1; }
+  60%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes pinpoint-chip {
+  /* Fades in just after the pin lands */
+  0%, 24% { transform: translate(-50%, 12px); opacity: 0; }
+  36%     { transform: translate(-50%, 0);    opacity: 1; }
+  100%    { transform: translate(-50%, 0);    opacity: 1; }
+}
+
+@keyframes pinpoint-breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.04); }
+}
+
+@keyframes pinpoint-rise {
+  /* The whole card has a barely-perceptible "settle" at the start. */
+  0%   { transform: translateY(8px); }
+  20%  { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+
+/* Reduced motion â€” keep the layout but kill every animation so the
+   static composition (pin landed, listing card visible, chip showing
+   the distance) still reads correctly. */
+@media (prefers-reduced-motion: reduce) {
+  .home-pinpoint__orb,
+  .home-pinpoint__card,
+  .home-pinpoint__pin,
+  .home-pinpoint__ripple,
+  .home-pinpoint__listing,
+  .home-pinpoint__chip {
+    animation: none !important;
+  }
+  .home-pinpoint__ripple { opacity: 0; }
+  .home-pinpoint__listing { transform: none; opacity: 1; }
+  .home-pinpoint__chip { transform: translateX(-50%); opacity: 1; }
+}
+
+/* Legacy scene rules â€” kept as no-op so any stale references don't 404.
+   The new design uses `.home-pinpoint`; these are intentionally inert. */
+.home-scene,
+.home-scene__sky,
+.home-scene__sun,
+.home-scene__ground,
+.home-scene__grass,
+.home-scene__house,
+.home-scene__roof,
+.home-scene__body,
+.home-scene__door,
+.home-scene__window,
+.home-scene__chimney,
+.home-scene__smoke,
+.home-scene__smoke-puff,
+.home-scene__path,
+.home-scene__person,
+.home-scene__person-body,
+.home-scene__person-head,
+.home-scene__person-leg,
+.home-scene__box {
+  /* intentionally empty */
 }
 
 /* Action cards */
