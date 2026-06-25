@@ -50,24 +50,43 @@ function detectPlatform() {
   return { os: isAndroid ? 'android' : isIOS ? 'ios' : 'desktop', isMobile }
 }
 
+// Encode a `mailto:` / custom-scheme query string the way every mobile
+// mail client expects. We deliberately avoid `URLSearchParams` here
+// because its `toString()` emits `+` for spaces (form-urlencoded) and
+// the platform re-encodes that on the way out, producing the
+// `Inquiry+about+...` garbage you see in the Subject/Body. Using
+// `encodeURIComponent` gives us `%20` for spaces, which the OS mail
+// client decodes once and stops there.
+function encodeMailField(value) {
+  // `encodeURIComponent` already encodes `\n` as `%0A`, which is
+  // what every Android/iOS mail client expects in a `mailto:` body
+  // (per RFC 6068 the spec says CRLF, but %0A is universally
+  // accepted and renders as a real newline in Gmail's compose view).
+  return encodeURIComponent(String(value ?? ''))
+}
+
+function buildQueryString(fields) {
+  return Object.entries(fields)
+    .map(([key, value]) => `${key}=${encodeMailField(value)}`)
+    .join('&')
+}
+
 // A plain `mailto:` URL is the most reliable way to open a mobile mail
-// client with to/subject/body pre-filled. On Android it dispatches to the
-// user's default mail app (Gmail in most cases), and the
+// client with to/subject/body pre-filled. On Android it dispatches to
+// the user's default mail app (Gmail in most cases), and the
 // `?subject=...&body=...` query string is honoured by every major mail
 // client — including the Gmail app. We don't need a custom `intent://`
 // scheme, which is brittle (the `mailto:` prefix leaks into the To
 // field and extras are dropped on some Android versions).
 function buildMailtoUrl({ to, subject, body }) {
-  const params = new URLSearchParams({ subject, body })
-  return `mailto:${to}?${params.toString()}`
+  return `mailto:${to}?${buildQueryString({ subject, body })}`
 }
 
 // iOS-specific: try the Gmail app's custom URL scheme first. If the user
 // has Gmail installed, the template is pre-filled in the native app. If
 // not, the navigation silently fails and we fall back to `mailto:`.
 function buildIOSGmailUrl({ to, subject, body }) {
-  const params = new URLSearchParams({ to, subject, body })
-  return `googlegmail://co?${params.toString()}`
+  return `googlegmail://co?${buildQueryString({ to, subject, body })}`
 }
 
 function buildGmailComposeUrl(vacancy) {
@@ -126,6 +145,8 @@ function handleContactClick(e, platform, compose) {
 }
 
 function buildDesktopGmailUrl({ to, subject, body }) {
+  // Desktop uses Gmail's web compose endpoint, which DOES expect
+  // `+` for spaces — so URLSearchParams is fine here.
   const params = new URLSearchParams({ view: 'cm', fs: '1', to, su: subject, body })
   return `https://mail.google.com/mail/?${params.toString()}`
 }
