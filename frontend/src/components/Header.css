@@ -17,6 +17,7 @@
 }
 
 .app-header__inner {
+  position: relative; /* Anchor for the absolutely-centered logo on mobile. */
   max-width: var(--content-width);
   margin: 0 auto;
   height: var(--header-height-mobile);
@@ -55,6 +56,32 @@
 
 @media (min-width: 640px) {
   .brand { gap: var(--space-3); }
+}
+
+/* On mobile the right-side actions slot is hidden (no screens expose
+   rightSlot below 640 px), so the logo is the only child of the
+   header. Center it horizontally in the viewport using absolute
+   positioning anchored to the inner container. The button keeps its
+   full 44 px tap-target, only the visual alignment moves. */
+@media (max-width: 639px) {
+  .brand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin-left: 0;
+    padding: 6px 10px;
+  }
+  /* When the right slot IS shown on mobile, leave room for it on the
+     right edge so the centered logo doesn't overlap. */
+  .app-header__right { margin-left: auto; }
+  .app-header:has(.app-header__right) .brand {
+    /* Slight rightward bias to leave clearance for any future mobile
+       actions slot. Falls back to plain centering when :has() isn't
+       supported, which is fine because rightSlot isn't used on mobile
+       today. */
+    left: 50%;
+  }
 }
 
 .brand:hover { background: var(--ink-100); }

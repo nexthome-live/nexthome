@@ -52,20 +52,53 @@ export function Home({ onSelect, totalVacancies = 0 }) {
         </div>
 
         <div className="home-hero__visual" aria-hidden="true">
-          <div className="home-illu">
-            <div className="home-illu__blob" />
-            <div className="home-illu__blob home-illu__blob--alt" />
-            <div className="home-illu__card home-illu__card--top">
-              <span className="home-illu__card-icon"><Icon.Home /></span>
-              <span>2BR in South Austin</span>
+          <div className="home-pinpoint">
+            {/* Soft ambient orb behind everything — adds depth without
+                competing with the focal point. */}
+            <span className="home-pinpoint__orb" />
+
+            {/* The main glass card — a stylized map fragment. */}
+            <div className="home-pinpoint__card">
+              <div className="home-pinpoint__map">
+                {/* Faint street grid */}
+                <span className="home-pinpoint__grid" />
+                <span className="home-pinpoint__street home-pinpoint__street--h1" />
+                <span className="home-pinpoint__street home-pinpoint__street--h2" />
+                <span className="home-pinpoint__street home-pinpoint__street--h3" />
+                <span className="home-pinpoint__street home-pinpoint__street--v1" />
+                <span className="home-pinpoint__street home-pinpoint__street--v2" />
+                <span className="home-pinpoint__street home-pinpoint__street--v3" />
+
+                {/* A soft neighborhood block — implies "a place". */}
+                <span className="home-pinpoint__block home-pinpoint__block--a" />
+                <span className="home-pinpoint__block home-pinpoint__block--b" />
+                <span className="home-pinpoint__block home-pinpoint__block--c" />
+
+                {/* The pin: drops in, lands, rings ripple out, gentle
+                    float for the rest of the loop. */}
+                <span className="home-pinpoint__ripple" />
+                <span className="home-pinpoint__ripple home-pinpoint__ripple--2" />
+                <span className="home-pinpoint__pin">
+                  <span className="home-pinpoint__pin-head" />
+                  <span className="home-pinpoint__pin-stem" />
+                  <span className="home-pinpoint__pin-dot" />
+                </span>
+              </div>
             </div>
-            <div className="home-illu__card home-illu__card--middle">
-              <span className="home-illu__card-icon"><Icon.Map /></span>
-              <span>East Side • 1.2 mi</span>
+
+            {/* Floating listing card — communicates "discover places". */}
+            <div className="home-pinpoint__listing">
+              <span className="home-pinpoint__listing-thumb" />
+              <span className="home-pinpoint__listing-lines">
+                <span className="home-pinpoint__listing-line home-pinpoint__listing-line--title" />
+                <span className="home-pinpoint__listing-line home-pinpoint__listing-line--meta" />
+              </span>
             </div>
-            <div className="home-illu__card home-illu__card--bottom">
-              <span className="home-illu__card-icon"><Icon.Sparkles /></span>
-              <span>Just listed today</span>
+
+            {/* Tiny distance chip — reinforces "nearby". */}
+            <div className="home-pinpoint__chip">
+              <Icon.Map width={14} height={14} />
+              <span>0.8 mi</span>
             </div>
           </div>
         </div>
