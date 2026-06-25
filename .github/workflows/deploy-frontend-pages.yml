@@ -93,20 +93,15 @@ jobs:
       - name: Add SPA 404 fallback
         run: cp dist/index.html dist/404.html
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Vite's default output directory is `dist` inside the frontend
-          # project. `actions/upload-pages-artifact` resolves this relative
-          # to `working-directory`, which is set to `frontend` above.
-          path: ./dist
-
-      - name: Confirm build output
+      # Surface the absolute path of the build output so we can verify it
+      # exists, and so the upload step can reference it by an absolute
+      # path (the upload-pages-artifact action ignores the job's
+      # `working-directory` and resolves `./dist` against the runner root,
+      # which fails when the build ran in a subdirectory).
+      - name: Verify build output
         run: |
           {
+            echo "DIST_ABS_PATH=$(pwd)/dist"
             echo "### Frontend build output"
             echo ""
             echo "Files at the root of the Pages artifact:"
@@ -121,9 +116,21 @@ jobs:
             echo ""
             echo "If GitHub Pages still renders README.md:"
             echo "1. Settings → Pages → Source must be **GitHub Actions** (not a branch)."
-            echo "2. The site URL is https://<org>.github.io/nexthome/ — not the repo root."
+            echo "2. The site URL is https://nexthome-live.github.io/nexthome/ — not the repo root."
             echo "3. Hard refresh (Ctrl/Cmd+Shift+R) — old branch-deploys are cached briefly."
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # IMPORTANT: pass an absolute path. The upload action does not
+          # honor the job's `defaults.run.working-directory`; it resolves
+          # relative paths against the runner's HOME, which is why
+          # earlier runs failed with "tar: dist: Cannot open".
+          path: ${{ github.workspace }}/frontend/dist
 
   deploy:
     environment:
