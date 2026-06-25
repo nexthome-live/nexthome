@@ -96,6 +96,33 @@ npm run dev
 Optional API base URL:
 - `VITE_API_BASE_URL` (default: `http://localhost:8080`)
 
+## Live deployments
+
+- **Backend (Render):** https://nexthome-kkr6.onrender.com/
+- **Frontend (GitHub Pages):** https://nexthome-live.github.io/nexthome/
+
+### Configuring the frontend to call the Render backend
+
+The frontend reads its API URL from `VITE_API_BASE_URL` at build time
+(see `frontend/src/api/config.js`). To point the deployed Pages site
+at the Render backend, set the **GitHub repository secret**:
+
+| Secret | Value |
+|---|---|
+| `VITE_API_BASE_URL` | `https://nexthome-kkr6.onrender.com` (no trailing slash) |
+
+The Pages workflow at `.github/workflows/deploy-frontend-pages.yml`
+injects this into the Vite build. The hardcoded fallback in
+`config.js` also already points at this URL, so local `npm run dev`
+without any env vars will hit Render too.
+
+### Configuring Render to allow the Pages origin
+
+The backend's default `CORS_ALLOWED_ORIGINS` already includes
+`https://nexthome-live.github.io`. If you ever change the frontend
+host, update Render's environment variable
+`CORS_ALLOWED_ORIGINS` accordingly.
+
 ## Backend deployment to Google Cloud Run
 
 Backend deployment files are included:
