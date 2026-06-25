@@ -19,6 +19,13 @@
 
 name: Deploy frontend to GitHub Pages
 
+# Hard guard: a Pages build that uses Actions only works when the repo's
+# Pages source is "GitHub Actions". If it's still set to "Deploy from a
+# branch", GitHub will serve the repo root (often falling back to
+# README.md) and our build will look broken even though it succeeded.
+# We can't read repo settings from inside the workflow, so we surface
+# this as a clearly visible job summary message instead.
+
 on:
   # Deploy on pushes to main.
   push:
@@ -68,6 +75,20 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
+      # GitHub Pages runs Jekyll by default. Even though we don't use
+      # Jekyll, Jekyll will skip any file or folder that starts with
+      # an underscore (e.g. `/_assets/...`) and may transform our
+      # output. Drop a `.nojekyll` file in the build output to opt out.
+      - name: Disable Jekyll processing
+        run: touch dist/.nojekyll
+
+      # SPA fallback: when a user hits a deep link like
+      # /nexthome/manage/123, GitHub Pages would otherwise 404. Serving
+      # index.html as 404.html makes the SPA load and client-side
+      # routing can take over.
+      - name: Add SPA 404 fallback
+        run: cp dist/index.html dist/404.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -78,6 +99,19 @@ jobs:
           # project. `actions/upload-pages-artifact` resolves this relative
           # to `working-directory`, which is set to `frontend` above.
           path: ./dist
+
+      - name: Confirm build output
+        run: |
+          echo "### Frontend build output" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Files at the root of the Pages artifact:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ls -la dist | head -50 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "If GitHub Pages still renders README.md, verify that" >> $GITHUB_STEP_SUMMARY
+          echo "Settings → Pages → Source is set to **GitHub Actions**," >> $GITHUB_STEP_SUMMARY
+          echo "not \"Deploy from a branch\"." >> $GITHUB_STEP_SUMMARY
 
   deploy:
     environment:
