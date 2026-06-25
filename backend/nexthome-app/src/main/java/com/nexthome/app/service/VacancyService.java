@@ -38,6 +38,7 @@ public class VacancyService {
         vacancy.setLatitude(request.latitude());
         vacancy.setLongitude(request.longitude());
         vacancy.setCreatedBy(request.createdBy());
+        vacancy.setContactEmail(request.contactEmail());
         vacancy.setManagementToken(generateManagementToken());
 
         Vacancy saved = vacancyRepository.save(vacancy);
@@ -95,6 +96,7 @@ public class VacancyService {
         vacancy.setLatitude(request.latitude());
         vacancy.setLongitude(request.longitude());
         vacancy.setCreatedBy(request.createdBy());
+        vacancy.setContactEmail(request.contactEmail());
 
         return toResponse(vacancyRepository.save(vacancy), null);
     }
@@ -129,6 +131,7 @@ public class VacancyService {
                 vacancy.getLatitude(),
                 vacancy.getLongitude(),
                 vacancy.getCreatedBy(),
+                vacancy.getContactEmail(),
                 vacancy.getCreatedAt(),
                 distanceKm
         );

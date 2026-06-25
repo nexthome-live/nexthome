@@ -122,7 +122,8 @@ class SearchControllerTest {
                 "MG Road, Bengaluru",
                 latitude,
                 longitude,
-                "tester"
+                "tester",
+                null
         );
         mockMvc.perform(post("/api/vacancies")
                         .contentType(MediaType.APPLICATION_JSON)

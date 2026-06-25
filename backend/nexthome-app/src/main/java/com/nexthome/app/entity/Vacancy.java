@@ -45,6 +45,9 @@ public class Vacancy {
     @Column(nullable = false, length = 100)
     private String createdBy;
 
+    @Column(length = 255)
+    private String contactEmail;
+
     @Column(nullable = false, length = 32, unique = true)
     private String managementToken;
 
@@ -134,6 +137,14 @@ public class Vacancy {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
     }
 
     public String getManagementToken() {

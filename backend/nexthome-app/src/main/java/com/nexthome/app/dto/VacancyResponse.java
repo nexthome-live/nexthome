@@ -14,6 +14,7 @@ public record VacancyResponse(
         Double latitude,
         Double longitude,
         String createdBy,
+        String contactEmail,
         Instant createdAt,
         Double distanceKm
 ) {

@@ -89,7 +89,8 @@ class VacancyControllerTest {
                 "Banjara Hills",
                 null,
                 null,
-                "anita"
+                "anita",
+                null
         );
         mockMvc.perform(post("/api/vacancies")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +117,8 @@ class VacancyControllerTest {
                 "Indiranagar",
                 null,
                 null,
-                "ravi"
+                "ravi",
+                null
         );
 
         mockMvc.perform(put("/api/vacancies/{id}", vacancy.getId())
@@ -141,7 +143,8 @@ class VacancyControllerTest {
                 "Indiranagar",
                 null,
                 null,
-                "ravi"
+                "ravi",
+                null
         );
 
         mockMvc.perform(put("/api/vacancies/{id}", vacancy.getId())
@@ -211,7 +214,8 @@ class VacancyControllerTest {
                 "MG Road, Bengaluru",
                 null,
                 null,
-                "ravi"
+                "ravi",
+                null
         );
     }
 }

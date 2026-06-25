@@ -1,186 +1,35 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Inter, system-ui, -apple-system, sans-serif;
-  background: #f5f7fb;
-  color: #1b2a41;
-}
-
 .app-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-}
-
-.home-screen {
-  width: min(900px, 100%);
-  text-align: center;
-}
-
-.home-screen h1 {
-  margin-bottom: 32px;
-}
-
-.home-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
-}
-
-.home-action {
-  min-height: 220px;
-  font-size: 2rem;
-  font-weight: 700;
-  border: none;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #2b6cb0, #1a202c);
-  color: #fff;
-  cursor: pointer;
-}
-
-.screen {
-  width: min(900px, 100%);
-}
-
-.back-button {
-  margin-bottom: 12px;
-  border: none;
-  background: #1a202c;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-.form-grid,
-.filters {
-  display: grid;
-  gap: 10px;
-}
-
-input,
-textarea,
-button {
-  font: inherit;
-}
-
-input,
-textarea {
-  border: 1px solid #d2d7e1;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-textarea {
-  min-height: 100px;
-}
-
-button {
-  border: none;
-  border-radius: 8px;
-  background: #2b6cb0;
-  color: #fff;
-  padding: 10px;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.danger-button {
-  background: #bf1f2f;
-}
-
-.row-actions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.vacancy-list {
-  margin-top: 16px;
-  display: grid;
-  gap: 12px;
-}
-
-.vacancy-card h3 {
-  margin-top: 0;
-}
-
-.vacancy-card-header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(59, 107, 255, 0.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(255, 138, 61, 0.10), transparent 60%),
+    var(--bg-page);
 }
 
-.manage-card-button {
-  width: auto;
-  padding: 6px 10px;
-  white-space: nowrap;
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.inline-manage-form {
-  margin-top: 12px;
+.app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--space-5) var(--space-4);
+  padding-bottom: calc(var(--space-5) + var(--safe-bottom));
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  text-align: center;
+  flex-wrap: wrap;
 }
 
-.ok-message {
-  color: #0b8c53;
-}
-
-.error-message {
-  color: #bf1f2f;
-}
-
-@media (max-width: 640px) {
-  .app-shell {
-    place-items: start stretch;
-    padding: 16px;
-  }
-
-  .home-screen h1 {
-    margin-bottom: 20px;
-    font-size: 1.75rem;
-  }
-
-  .home-actions {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .home-action {
-    min-height: 140px;
-    font-size: 1.4rem;
-  }
-
-  .card {
-    padding: 12px;
-  }
-
-  .vacancy-card-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .manage-card-button {
-    width: 100%;
-    white-space: normal;
-  }
-
-  .row-actions {
-    grid-template-columns: 1fr;
-  }
+.app-footer__dot {
+  color: var(--ink-300);
 }
