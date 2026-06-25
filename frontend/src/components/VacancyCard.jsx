@@ -50,42 +50,24 @@ function detectPlatform() {
   return { os: isAndroid ? 'android' : isIOS ? 'ios' : 'desktop', isMobile }
 }
 
-// Build an Android `intent://` URL that opens the Gmail app's compose screen
-// pre-filled with to/subject/body. Falls back to Gmail web if Gmail is not
-// installed (Chrome handles the fallback automatically when `S.browser_fallback_url`
-// is present and the intent can't be resolved).
-//   Ref: https://developer.chrome.com/docs/multidevice/android/intents
-function buildAndroidGmailIntent({ to, subject, body }) {
-  // Browser fallback used when the Gmail package isn't installed — Chrome
-  // will load this URL automatically via `S.browser_fallback_url`.
-  const fallback = `https://mail.google.com/mail/?${new URLSearchParams({
-    view: 'cm', fs: '1', to, su: subject, body,
-  }).toString()}`
-  // Compose intent targeting the Gmail app (com.google.android.gm) with our
-  // template pre-filled. The `mailto:` scheme is the universal "open a
-  // compose window" intent on Android, and Gmail respects SENDTO extras.
-  return `intent:mailto:${to}` +
-    `#Intent;scheme=mailto;` +
-    `action=android.intent.action.SENDTO;` +
-    `package=com.google.android.gm;` +
-    `S.browser_fallback_url=${encodeURIComponent(fallback)};` +
-    `S.android.intent.extra.SUBJECT=${encodeURIComponent(subject)};` +
-    `S.android.intent.extra.TEXT=${encodeURIComponent(body)};` +
-    `end`
-}
-
-// iOS uses the Gmail app's custom URL scheme. If the user doesn't have
-// Gmail installed the link will silently fail, so we also expose a
-// `googlegmail://co?to=...&subject=...&body=...` link and rely on
-// `mailto:` as the real fallback.
-function buildIOSGmailUrl({ to, subject, body }) {
-  const params = new URLSearchParams({ to, subject, body })
-  return `googlegmail://co?${params.toString()}`
-}
-
+// A plain `mailto:` URL is the most reliable way to open a mobile mail
+// client with to/subject/body pre-filled. On Android it dispatches to the
+// user's default mail app (Gmail in most cases), and the
+// `?subject=...&body=...` query string is honoured by every major mail
+// client — including the Gmail app. We don't need a custom `intent://`
+// scheme, which is brittle (the `mailto:` prefix leaks into the To
+// field and extras are dropped on some Android versions).
 function buildMailtoUrl({ to, subject, body }) {
   const params = new URLSearchParams({ subject, body })
   return `mailto:${to}?${params.toString()}`
+}
+
+// iOS-specific: try the Gmail app's custom URL scheme first. If the user
+// has Gmail installed, the template is pre-filled in the native app. If
+// not, the navigation silently fails and we fall back to `mailto:`.
+function buildIOSGmailUrl({ to, subject, body }) {
+  const params = new URLSearchParams({ to, subject, body })
+  return `googlegmail://co?${params.toString()}`
 }
 
 function buildGmailComposeUrl(vacancy) {
@@ -121,16 +103,17 @@ function handleContactClick(e, platform, compose) {
   const { to, subject, body } = compose.primary
 
   if (platform.os === 'android') {
-    // `intent://` URLs only work as a top-level navigation, never inside
-    // an `<a target="_blank">`. Chrome handles the fallback URL itself
-    // when the Gmail package isn't installed.
-    window.location.href = buildAndroidGmailIntent({ to, subject, body })
+    // `mailto:` must be a top-level navigation on Android so the OS
+    // can hand off to the user's default mail app (Gmail in most cases)
+    // with our subject/body template pre-filled.
+    window.location.href = buildMailtoUrl({ to, subject, body })
     return
   }
 
   // iOS / iPadOS: try the Gmail app via its custom scheme first. If the
   // user doesn't have Gmail installed the navigation silently fails
-  // (the page stays visible) and we fall back to `mailto:`.
+  // (the page stays visible) and we fall back to `mailto:` with the
+  // same subject + body template.
   const start = Date.now()
   window.location.href = buildIOSGmailUrl({ to, subject, body })
   setTimeout(() => {
@@ -151,7 +134,9 @@ function getContactHref(platform, compose) {
   if (!compose) return null
   const { to, subject, body } = compose.primary
   if (platform.os === 'android') {
-    return buildAndroidGmailIntent({ to, subject, body })
+    // Plain `mailto:` — Android dispatches to the default mail app
+    // (usually Gmail) and pre-fills subject + body from the query string.
+    return buildMailtoUrl({ to, subject, body })
   }
   if (platform.os === 'ios') {
     return buildIOSGmailUrl({ to, subject, body })
