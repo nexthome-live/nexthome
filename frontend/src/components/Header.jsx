@@ -1,4 +1,5 @@
 import './Header.css'
+import { NoticeBanner } from './NoticeBanner'
 
 export function Header({ onHome, canGoHome = true, rightSlot }) {
   return (
@@ -33,6 +34,7 @@ export function Header({ onHome, canGoHome = true, rightSlot }) {
         </button>
         {rightSlot && <div className="app-header__right">{rightSlot}</div>}
       </div>
+      <NoticeBanner />
     </header>
   )
 }
