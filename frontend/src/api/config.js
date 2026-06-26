@@ -6,4 +6,4 @@
 // by setting the `VITE_API_BASE_URL` repo secret used by the Pages workflow.
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL
-    || 'https://nexthome-kkr6.onrender.com'
+    || 'https://nexthome-core-874015783648.europe-west1.run.app'
